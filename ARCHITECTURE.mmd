@@ -1,0 +1,45 @@
+%% Changi Airport RAG Chatbot Architecture (Mermaid)
+
+%% System Overview
+---
+graph TD
+    A["User"] -->|"HTTP Request"| B["FastAPI Server"]
+    B -->|"Query"| C["Retrieval System"]
+    C -->|"Context"| D["LLM Generation"]
+    D -->|"Response"| B
+    B -->|"Display"| A
+
+    subgraph "Backend"
+        B
+        C
+        D
+        E["FAISS Vector Store"]
+        F["Ollama LLM"]
+    end
+
+    C -->|"Search"| E
+    D -->|"Generate"| F
+    F -->|"Embed"| E
+---
+
+%% Data Flow
+---
+sequenceDiagram
+    participant U as "User"
+    participant W as "Web UI"
+    participant A as "FastAPI"
+    participant R as "Retriever"
+    participant V as "FAISS"
+    participant L as "LLM (Ollama)"
+
+    U->>W: "Enters question"
+    W->>A: "POST /chat"
+    A->>R: "Process query"
+    R->>V: "Search similar documents"
+    V-->>R: "Return top matches"
+    R-->>A: "Context + documents"
+    A->>L: "Generate response"
+    L-->>A: "Generated answer"
+    A-->>W: "Formatted response"
+    W-->>U: "Display answer"
+--- 
